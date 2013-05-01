@@ -29,5 +29,6 @@ def load_redistribution(xp, xop):
     Percentage = uop/Dop
     for item in offpeakusage:
         New_off_peak_load.append((Percentage)*item)
+    
         
     return New_peak_load, up  
