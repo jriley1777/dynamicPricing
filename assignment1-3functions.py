@@ -39,7 +39,7 @@ def readData(filename):
         row['Hour'] = int(row['Hour'])
         rawdata.append(row)
         usagelist.append(row['Usage (MWh)'])
-    
+    print rawdata
     #generate summed dp and dop values for peak and off-peak usage
     for i in range(len(rawdata)):
         hour = rawdata[i]['Hour']    
@@ -52,6 +52,42 @@ def readData(filename):
     
     return usagelist, peaklist, offpeaklist, dp, dop
 #read data end
+
+######################################
+#
+# Load Redistribution
+# This function will redistribute the peak load reduction under the new curve
+######################################
+
+def load_redistribution(xp, xop):
+    global peaklist 
+    global offpeaklist
+    global dp, dop
+    
+    Ratio = xp/xop
+    Lv =(1- (Ratio-1)^0.441066/100)
+    Gv = Ratio^(-0.2133333)
+    New_peak_load = []
+    New_off_peak_load = []
+    for item in peakusage:
+        New_peak_load.append(Lv*item)
+    up = sum(New_peak_load)
+    uop = up/((Dp/Dop)*Gv) 
+    Percentage = uop/Dop
+    for item in offpeakusage:
+        New_off_peak_load.append((Percentage)*item)
+    
+    return New_peak_load, up
+#load distribution end
+
+
+
+
+####################################3
+#
+# Function Calls
+#
+#####################################
 
 readData(filename)
 print dp
